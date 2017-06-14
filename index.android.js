@@ -9,12 +9,13 @@ import {
   ListView,
   StyleSheet,
   TouchableHighlight,
+  TouchableOpacity,
   ScrollView,
 } from 'react-native';
 import { StackNavigator, NavigationActions } from 'react-navigation';
 
 // Template note.js
-import Note from './note';
+import Note from './Note';
 
 // Main screen
 class MainScreen extends React.Component {
@@ -24,22 +25,6 @@ class MainScreen extends React.Component {
   constructor(props) {
     super(props);
 
-    var arr1 = ['11','22']
-    var arr2 = new Map();
-    arr2.set(
-      {
-      'date' : '03/05/2017',
-      'name' : 'Note1',
-      },
-      {
-      'date' : '02/05/2017',
-      'name' : 'Note2',
-      },
-    )
-    // [
-    //     {name: Garry, surname: Potter},
-    //     {name: Garry2, surname: Potter2}
-    // ]
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       arr2        : arr2,
@@ -70,33 +55,44 @@ class MainScreen extends React.Component {
 	  const { navigate } = this.props.navigation;
 
     // Map
-    let notes = this.state.noteArray.map( (val, keyg) => {
-      // console.warn(keyg+' : '+val);
-      return <Note key={keyg} val={val} /> // Note
-    });
+    // let notes = this.state.noteArray.map( (val, keyg) => {
+    //   // console.warn(keyg+' : '+val);
+    //   return <Note key={keyg} val={val} /> // Note
+    // });
 
-    let notes2 = this.state.arr3.for( (var i in arr3) => {
+    // console.warn('arr3'+this.state.arr3)
+    let arr33 = this.state.arr3
+    let notes = []
+    for (var i in arr33) {
+      // console.warn(arr33[i].date+' : '+arr33[i].name);
+      notes[i] = <Note key={i} name={arr33[i].name} date={arr33[i].date} />
+    }
 
-      console.warn(arr3[i].date+' : '+arr3[i].name);
-    } )
 
-    // console.warn(this.state.noteArray)
 
     return (
       <View style={st.container}>
+
         <View style={st.h1}>
-          <Text style={st.hText}>Text-1</Text>
-        </View>
-        <ScrollView>{notes}</ScrollView>
-        <View style={st.h1}>
+          <Text style={st.hText}>-=NOTER=-</Text>
         </View>
 
-        {/* <View style={st.container}>
-          <Text style={st.bg1}>Test3:</Text>
-          <Note keyg='k1' val='v2' />
-        </View> */}
+        <ScrollView style={st.scrContainer}>{notes}</ScrollView>
 
-        <Text style={st.bg1}>List:</Text>
+        <View style={st.footer}>
+          <TouchableOpacity style={st.addButton}>
+            <Text style={st.addButtonText}>Add new Note</Text>
+          </TouchableOpacity>
+
+          <TextInput  style={st.TextInput}
+                      placeholder='Input Note here'
+                      placeholderTextColor='white'
+                      underlineColorAndroid='transparent'
+                      >
+          </TextInput>
+        </View>
+
+        {/* <Text style={st.bg1}>List:</Text>
         <ListView
           dataSource={this.state.dataSource}
           renderRow={
@@ -109,20 +105,67 @@ class MainScreen extends React.Component {
               </TouchableHighlight>
             </View>
           }
-        />
+        /> */}
       </View>
     );
   }
 }
 
 const st = StyleSheet.create({
-  listviewitemabout: {
+  container: {
     flex: 1,
     paddingTop: 10,
     paddingBottom: 10,
     paddingLeft: 5,
     paddingRight: 5,
-  }
+  },
+  h1:{
+    backgroundColor: 'blue',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomWidth: 10,
+    borderBottomColor: '#ddd'
+  },
+  hText:{
+    color: 'white',
+    fontSize: 18,
+    padding: 26,
+  },
+  scrContainer:{
+    flex: 1,
+    marginBottom: 100
+  },
+  footer:{
+    position: 'absolute',
+    left:0,
+    right:0,
+    bottom:0,
+    alignItems: 'center'
+  },
+  addButton:{
+    width : 140,
+    height: 50,
+    borderRadius: 50,
+    backgroundColor: 'green',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    marginBottom: -10,
+    marginRight: -160
+  },
+  addButtonText:{
+    color : '#ffffff',
+    fontSize: 16,
+  },
+  TextInput:{
+    alignSelf : 'stretch',
+    color: '#fff',
+    backgroundColor: '#252525',
+    padding: 20,
+    paddingTop: 40,
+    borderTopWidth: 2,
+    borderTopColor: '#ededed'
+  },
 });
 
 const ReactBlogClient = StackNavigator({
