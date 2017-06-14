@@ -8,12 +8,12 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-export default class todoapp {
+export default class note extends React.Component {
   render(){
     return(
-      <View>
-        <Text>{this.props.val.date}</Text>
-        <Text>{this.props.val.note}</Text>
+      <View keyV={this.props.keyval}>
+        <Text>{this.props.keyg}</Text>
+        <Text>{this.props.val}</Text>
         <TouchableOpacity onPress={this.props.deleteMethod}>
           <Text>=D=</Text>
         </TouchableOpacity>
