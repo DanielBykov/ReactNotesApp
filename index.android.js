@@ -48,6 +48,16 @@ class MainScreen extends React.Component {
         'noteArray1' : 'noteArray11',
       ],
       noteTxt     : 'noteTxt-noteTxt',
+      arr3        :[
+        {
+        'date' : '03/05/2017',
+        'name' : 'Note1',
+        },
+        {
+        'date' : '02/05/2017',
+        'name' : 'Note2',
+        },
+      ]
     };
   }
   // Tap event
@@ -65,9 +75,9 @@ class MainScreen extends React.Component {
       return <Note key={keyg} val={val} /> // Note
     });
 
-    let notes2 = this.state.arr2.forEach( (it,i,arr2)=>{
+    let notes2 = this.state.arr3.for( (var i in arr3) => {
 
-      console.warn(i.date+' : '+i.name);
+      console.warn(arr3[i].date+' : '+arr3[i].name);
     } )
 
     // console.warn(this.state.noteArray)
