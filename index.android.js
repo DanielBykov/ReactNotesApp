@@ -5,110 +5,127 @@ import {
   Button,
   View,
   TextInput,
-  ToastAndroid,
+  // ToastAndroid,
   ListView,
   StyleSheet,
   TouchableHighlight,
   TouchableOpacity,
   ScrollView,
+  AsyncStorage,
 } from 'react-native';
 import { StackNavigator, NavigationActions } from 'react-navigation';
+import Note from './Note';                              // Custom component note.js
 
-// Template note.js
-import Note from './Note';
-
-// Main screen
-class MainScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Main screen',
-  };
-  constructor(props) {
-    super(props);
-
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    this.state = {
-      arr2        : arr2,
-      dataSource  : ds.cloneWithRows(arr1),
-      noteArray   : [
-        'noteArray1' : 'noteArray11',
+class MainScreen extends React.Component {              // Main screen
+  // static navigationOptions = {title: 'Main screen'};    // Navigation
+  constructor(props) { super(props);                    // Constructor
+    this.state = {                                      // State
+      noteArray        :[                               // Note data structure
+        {
+        'date' : '2017',
+        'note' : 'Simple note',
+        },
       ],
-      noteTxt     : 'noteTxt-noteTxt',
-      arr3        :[
-        {
-        'date' : '03/05/2017',
-        'name' : 'Note1',
-        },
-        {
-        'date' : '02/05/2017',
-        'name' : 'Note2',
-        },
-      ]
-    };
-  }
-  // Tap event
-  _onPressButton() {
-    alert("You tapped the button!");
-  }
-
-  // Rendering view
-  render() {
-	  const { navigate } = this.props.navigation;
-
-    // Map
-    // let notes = this.state.noteArray.map( (val, keyg) => {
-    //   // console.warn(keyg+' : '+val);
-    //   return <Note key={keyg} val={val} /> // Note
-    // });
-
-    // console.warn('arr3'+this.state.arr3)
-    let arr33 = this.state.arr3
-    let notes = []
-    for (var i in arr33) {
-      // console.warn(arr33[i].date+' : '+arr33[i].name);
-      notes[i] = <Note key={i} name={arr33[i].name} date={arr33[i].date} />
+      noteText: '',
     }
 
+    var lastNote = 'init222'
 
+    AsyncStorage.getItem('noteArrayStorage')
+      .then((value) => {
+        if(value != ''){
+          this.setState( { noteArray : JSON.parse(value) } )
+          // console.warn('3: ' + value);
+        }
+      })
+      .done();
 
+  }
+// end Constructor
+  render() {                                        // Rendering view
+	  const { navigate } = this.props.navigation;
+
+    let arr = this.state.noteArray
+    let notes = []
+    for (let i in arr) {
+      notes[i] = <Note
+                    key={i}
+                    keyval={i}
+                    note={arr[i].note}
+                    date={arr[i].date}
+                    deleteMethod={ ()=>this.deleteNote(i) } />
+    }
     return (
       <View style={st.container}>
 
         <View style={st.h1}>
           <Text style={st.hText}>-=NOTER=-</Text>
         </View>
-
         <ScrollView style={st.scrContainer}>{notes}</ScrollView>
-
         <View style={st.footer}>
-          <TouchableOpacity style={st.addButton}>
-            <Text style={st.addButtonText}>Add new Note</Text>
+
+          <TouchableOpacity style={st.addButton}
+            onPress={this.addNote.bind(this)}>
+            <Text style={st.addButtonText}>+</Text>
           </TouchableOpacity>
 
           <TextInput  style={st.TextInput}
                       placeholder='Input Note here'
                       placeholderTextColor='white'
                       underlineColorAndroid='transparent'
+                      onChangeText={(noteText) => { this.setState({noteText}) }}
+                      value={this.state.noteText}
+                      onSubmitEditing={(event)=>{this.addNote()}}
                       >
           </TextInput>
         </View>
-
-        {/* <Text style={st.bg1}>List:</Text>
-        <ListView
-          dataSource={this.state.dataSource}
-          renderRow={
-            (rowData) =>
-              // var key = "ff";
-            <View>
-              <Text>9999</Text>
-              <TouchableHighlight onPress={this._onPressButton}>
-                <Text>{rowData}</Text>
-              </TouchableHighlight>
-            </View>
-          }
-        /> */}
       </View>
     );
   }
+
+  addNote() {                                // Function - Event on Tap
+    if(this.state.noteText){
+      let d = new Date
+      this.state.noteArray.push(
+        {
+          'date': this.dateFormat(),
+          'note': this.state.noteText }
+      )
+      AsyncStorage.setItem('noteArrayStorage',
+        JSON.stringify(this.state.noteArray) )
+
+      this.setState({noteArray: this.state.noteArray})
+      this.setState({noteText: ''})
+      // this.refs.SecondInput.focus();
+    }
+  }
+  deleteNote(key){
+    this.state.noteArray.splice(key, 1)
+    AsyncStorage.setItem('noteArrayStorage',
+      JSON.stringify(this.state.noteArray) )
+    this.setState({noteArray: this.state.noteArray})
+  }
+
+  dateFormat() {
+    var date = new Date()
+    var y = date.getFullYear(date),
+        m =   this.add0( date.getMonth(    date) ),
+        d =   this.add0( date.getDate(     date) ),
+        h =   this.add0( date.getHours(    date) ),
+        mm =  this.add0( date.getMinutes(  date) )
+
+    return d +'/'+ m +'/'+ y +' at '+h+':'+mm
+  }
+  add0 (n){
+    var r;
+    if( n^0 === n ){
+      if (10>n && n>=0) r = '0'+n;
+      else r = n
+    }
+    else r = ''
+    return r+''
+  }
+
 }
 
 const st = StyleSheet.create({
@@ -120,7 +137,7 @@ const st = StyleSheet.create({
     paddingRight: 5,
   },
   h1:{
-    backgroundColor: 'blue',
+    backgroundColor: '#4B67A0',
     alignItems: 'center',
     justifyContent: 'center',
     borderBottomWidth: 10,
@@ -133,38 +150,45 @@ const st = StyleSheet.create({
   },
   scrContainer:{
     flex: 1,
-    marginBottom: 100
+    marginBottom: 90,
   },
   footer:{
     position: 'absolute',
     left:0,
     right:0,
-    bottom:0,
-    alignItems: 'center'
+    bottom:10,
+    alignItems: 'center',
+    height:70
   },
   addButton:{
-    width : 140,
-    height: 50,
-    borderRadius: 50,
-    backgroundColor: 'green',
+    width : 50,
+    height: 65,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
+    backgroundColor: '#FF5A5F',
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 8,
-    marginBottom: -10,
-    marginRight: -160
+    position:'absolute',
+    right:10,
+    top:5,
   },
   addButtonText:{
     color : '#ffffff',
-    fontSize: 16,
+    fontSize: 36,
   },
   TextInput:{
     alignSelf : 'stretch',
     color: '#fff',
     backgroundColor: '#252525',
     padding: 20,
-    paddingTop: 40,
+    paddingBottom: 17,
+    marginLeft:10,
+    marginTop:5,
     borderTopWidth: 2,
-    borderTopColor: '#ededed'
+    borderTopColor: '#ededed',
+    width: 275,
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 20,
   },
 });
 

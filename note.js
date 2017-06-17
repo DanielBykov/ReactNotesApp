@@ -11,18 +11,18 @@ import {
 export default class note extends React.Component {
   render(){
     return(
-      <View style={st.note} keyG={this.props.keyval}>
+      <View style={st.note} key={this.props.keyval}>
         <Text style={st.noteTxt}>
-          <Text style={st.noteTxtTitle}>Date:_</Text>
+          <Text style={st.noteTxtTitle}>Date:&nbsp;&nbsp;</Text>
            {this.props.date}
         </Text>
         <Text style={st.noteTxt}>
-          <Text style={st.noteTxtTitle}>Name:_</Text>
-           {this.props.name}
+          <Text style={st.noteTxtTitle}>Note:&nbsp;&nbsp;</Text>
+           {this.props.note}
         </Text>
 
         <TouchableOpacity onPress={this.props.deleteMethod} style={st.noteDel}>
-          <Text style={st.noteDelTxt}>=D=</Text>
+          <Text style={st.noteDelTxt}>x</Text>
         </TouchableOpacity>
       </View>
     );
@@ -52,11 +52,13 @@ const st = StyleSheet.create({
     borderRadius: 10
   },
   noteDelTxt:{
-
+    color:'#fff',
+    fontSize: 20
   },
   noteTxtTitle:{
     fontWeight:'bold',
-    backgroundColor: '#aaa',
+    fontStyle: 'italic',
+    color: '#E9A820',
     marginRight: 5
   }
 })
